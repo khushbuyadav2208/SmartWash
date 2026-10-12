@@ -1,0 +1,10 @@
+import {useState} from 'react';
+import Modal from './Modal';
+import {API_URL} from '../config';
+import {apiFetch} from '../api';
+export default function RoomInventory({hostel,onClose,onSaved}){
+ const [rooms,setRooms]=useState(hostel.rooms.map((number,i)=>({...hostel.roomDetails?.find(r=>r.number===number),number,key:i}))),[error,setError]=useState(''),[busy,setBusy]=useState(false);
+ const update=(i,key,value)=>setRooms(rows=>rows.map((r,j)=>j===i?{...r,[key]:value}:r));
+ const save=async e=>{e.preventDefault();setBusy(true);setError('');try{await apiFetch(`${API_URL}/api/hostels/${hostel.id}/room-inventory`,{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify({rooms:rooms.map(({number,building,floor,capacity})=>({number,building,floor,capacity}))})});onSaved();}catch(e){setError(e.message);}finally{setBusy(false);}};
+ return <Modal title="Rooms & buildings" onClose={onClose}><p>{hostel.name} · Assigned rooms are protected. A blank capacity retains an unrestricted legacy room.</p><form className="settings-form" onSubmit={save}>{rooms.map((r,i)=><fieldset className="room-entry" key={r.key}><legend>Room {i+1}</legend>{[['number','Room number','text'],['building','Building','text'],['floor','Floor','number'],['capacity','Capacity (optional)','number']].map(([key,label,type])=><label key={key}>{label}<input className="custom-input" required={key==='number'} type={type} min={key==='capacity'?1:0} max={key==='floor'?100:undefined} maxLength={key==='number'?30:100} value={r[key]??''} onChange={e=>update(i,key,e.target.value)}/></label>)}<button type="button" className="btn btn-danger" disabled={rooms.length===1} onClick={()=>setRooms(rows=>rows.filter((_,j)=>j!==i))}>Remove room {i+1}</button></fieldset>)}<button type="button" className="btn btn-secondary" disabled={rooms.length>=500} onClick={()=>setRooms(rows=>[...rows,{key:crypto.randomUUID(),number:'',building:'',floor:0,capacity:''}])}>Add room</button>{error&&<p role="alert" className="form-error">{error}</p>}<button className="btn btn-primary" disabled={busy}>{busy?'Saving…':'Save room inventory'}</button></form></Modal>;
+}

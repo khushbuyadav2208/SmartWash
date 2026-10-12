@@ -1,0 +1,17 @@
+services:
+  - type: web
+    name: smart-wash-laundry-system
+    env: node
+    plan: free
+    buildCommand: npm ci --prefix backend && npm ci --prefix frontend && npm run build
+    startCommand: npm start
+    healthCheckPath: /api/health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: MONGODB_URI
+        sync: false
+      - key: APP_ORIGIN
+        sync: false
+      - key: LAUNDRY_TIMEZONE
+        value: Asia/Kolkata

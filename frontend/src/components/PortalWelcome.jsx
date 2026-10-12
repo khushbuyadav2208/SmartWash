@@ -1,0 +1,5 @@
+import {ArrowUpRight} from 'lucide-react';
+const content={admin:{label:'THE FRESH DEPARTMENT / OPERATIONS',title:'A campus in motion.',description:'A clear view of every hostel, every order, and the people keeping things moving.',action:'Open monitoring'},student:{label:'YOUR PERSONAL LAUNDRY CLUB',title:'Good days start fresh.',description:'Your next wash is a few taps away. We’ll keep you in the loop, from drop-off to collection.',action:'Book Laundry'},staff:{label:'SMARTWASH / SERVICE DESK',title:'Every garment. Accounted for.',description:'Verify every garment. Track every bag. Make every handover count.',action:'Start scanning'}};
+export default function PortalWelcome({role,name,onAction}){
+ const c=content[role];return <section className={`portal-welcome welcome-${role}`}><div className="welcome-copy"><p className="eyebrow">{c.label}</p><h1>{c.title}</h1><p>Welcome back, {name.split(' ')[0]}. {c.description}</p></div><button className="btn btn-primary" onClick={onAction}>{c.action}<ArrowUpRight size={17}/></button></section>;
+}
